@@ -1,0 +1,5 @@
+profile: service
+defaultPackage: ebay.tx.stats
+---
+testFramework: spek
+sourceLanguage: kotlin

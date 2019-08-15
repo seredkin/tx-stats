@@ -1,0 +1,11 @@
+micronaut:
+  application:
+    name: ebay-tx-stats
+  io:
+    watch:
+      paths: src/main/kotlin
+      restart: true
+jackson:
+  serialization:
+    indentOutput: true
+
