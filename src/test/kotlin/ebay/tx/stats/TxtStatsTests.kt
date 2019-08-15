@@ -24,7 +24,7 @@ class TxtStatsTests {
     @Inject
     lateinit var context: ApplicationContext
     @Inject
-    lateinit var txRepo: TxRepo
+    private lateinit var txRepo: TxRepo
 
 
     @Test
@@ -42,6 +42,7 @@ class TxtStatsTests {
 
         val localOrderStats = statsFromList(orders1)
         assert(orders1.size == localOrderStats.orderCount)
+        { "Local reduction correctness" }
 
         val repoTotals = txRepo.cache.values.reduce { v1, v2 -> v1.sumWith(v2) }
         val statisticsTimer = Stopwatch.createStarted()
@@ -58,7 +59,7 @@ class TxtStatsTests {
 
         log.info("Population time:\t$populationTimer\tCalculation time:\t$statisticsTimer")
 
-        val order2sumFixed = 1111 //Each order's amount is the same during the second run
+        val order2sumFixed = 1000 //Each order's amount is the same during the second run
 
         val repoStatsBefore = txRepo.fetchStats(start.minusSeconds(Config.SECONDS_TO_BUFFER))
         populateTxRepo(txRepo, maxBufferSize, start) { BigDecimal(order2sumFixed) }
