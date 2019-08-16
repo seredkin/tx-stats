@@ -17,7 +17,7 @@ import kotlin.streams.toList
 
 
 @MicronautTest(application = TxStatsApp::class)
-class TxtStatsTests {
+class TxRepoTest {
 
     @Inject
     lateinit var server: EmbeddedServer
@@ -92,7 +92,7 @@ class TxtStatsTests {
             }.toList()
 
     companion object {
-        private val log = LoggerFactory.getLogger(TxtStatsTests::class.java)
+        private val log = LoggerFactory.getLogger(TxRepoTest::class.java)
     }
 
 }

@@ -2,11 +2,12 @@ package ebay.tx.stats
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
+import ebay.tx.stats.Config.SALES_AMOUNT
 import ebay.tx.stats.Config.mathContext
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpResponse.accepted
+import io.micronaut.http.HttpResponse.badRequest
 import io.micronaut.http.HttpResponse.ok
-import io.micronaut.http.HttpResponse.serverError
 import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Controller
@@ -36,17 +37,24 @@ object TxStatsApp {
 }
 
 /** Json Response for the '/statistics' endpoint */
-data class Statistics(@JsonIgnore val t: Instant,
+data class Statistics(@JsonIgnore val t: Instant = now(),
                       @JsonProperty("total_sales_amount") val amount: BigDecimal,
                       @JsonIgnore val orderCount: Int) {
     @JsonProperty("average_amount_per_order")
-    fun avg() = amount.divide(BigDecimal(orderCount), RoundingMode.HALF_UP).setScale(2)
+    fun avg(): BigDecimal = when (orderCount > 0) {
+        true -> amount.divide(BigDecimal(orderCount), RoundingMode.HALF_UP).setScale(2)
+        else -> BigDecimal.ZERO
+    }
 }
+
+data class Sales(@JsonProperty(SALES_AMOUNT) val amount: String)
 
 internal object Config {
     val mathContext: MathContext = MathContext.DECIMAL128
     const val SECONDS_TO_BUFFER: Long = 60
     const val CLEANUP_AFTER: Long = 120
+    const val SALES_AMOUNT = "sales_amount"
+
 }
 
 @Controller
@@ -60,16 +68,16 @@ internal open class Rest(private val txRepo: TxRepo) {
             produces = [MediaType.APPLICATION_JSON],
             single = true)
     open fun addTx(
-            @Size(max = 512) @QueryValue("sales_amount") amount: String,
+            @Size(max = 512) @QueryValue(SALES_AMOUNT) amount: String,
             @Size(max = 2) @Body bodyStub: String?): HttpResponse<Single<String>> {
         return try {
             val txAmount = BigDecimal(amount, mathContext).setScale(2, RoundingMode.HALF_DOWN)
             txRepo.add(now(), txAmount);
             accepted()
         } catch (e: NumberFormatException) {
-            val msg = "Cannot parse param:'sales_amount' value of $amount"
+            val msg = "Cannot parse param:'$SALES_AMOUNT' value of $amount"
             log.error(msg)
-            serverError(just(msg))
+            badRequest(just(msg))
         }
     }
 
