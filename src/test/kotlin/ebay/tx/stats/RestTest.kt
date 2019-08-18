@@ -9,11 +9,13 @@ import io.micronaut.http.MediaType.APPLICATION_JSON_TYPE
 import io.micronaut.http.MutableHttpRequest
 import io.micronaut.http.client.DefaultHttpClient
 import io.micronaut.http.client.RxHttpClient
+import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.runtime.server.EmbeddedServer
 import io.micronaut.test.annotation.MicronautTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
+import strikt.api.expectThrows
 import java.util.*
 import javax.inject.Inject
 
@@ -45,12 +47,13 @@ class RestTest {
 
     @Test
     fun postInvalidData() {
-        val response = rxClient().toBlocking()
-                .retrieve(
-                        salesRequest("10_02"),
-                        Argument.of(HashMap::class.java),
-                        Argument.of(HashMap::class.java))
-        assertEquals(HttpStatus.BAD_REQUEST, response["code"])
+        val emptyArg = Argument.of(HashMap::class.java)
+        expectThrows<HttpClientResponseException> {
+            rxClient().toBlocking().retrieve(salesRequest("10_02"), emptyArg, emptyArg)
+        }
+        expectThrows<HttpClientResponseException> {
+            rxClient().toBlocking().retrieve(salesRequest("-10.03"), emptyArg, emptyArg)
+        }
     }
 
     private fun rxClient(): RxHttpClient = DefaultHttpClient(server.uri.toURL())

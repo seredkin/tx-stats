@@ -8,7 +8,9 @@ import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpResponse.accepted
 import io.micronaut.http.HttpResponse.badRequest
 import io.micronaut.http.HttpResponse.ok
+import io.micronaut.http.HttpStatus
 import io.micronaut.http.MediaType
+import io.micronaut.http.MutableHttpResponse
 import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
@@ -72,8 +74,13 @@ internal open class Rest(private val txRepo: TxRepo) {
             @Size(max = 2) @Body bodyStub: String?): HttpResponse<Single<String>> {
         return try {
             val txAmount = BigDecimal(amount, mathContext).setScale(2, RoundingMode.HALF_DOWN)
-            txRepo.add(now(), txAmount);
-            accepted()
+            when(txAmount <= BigDecimal.ZERO){
+                true -> badRequest(just("Sales amount should be greater than 0"))
+                else -> {
+                    txRepo.add(now(), txAmount)
+                    accepted()
+                }
+            }
         } catch (e: NumberFormatException) {
             val msg = "Cannot parse param:'$SALES_AMOUNT' value of $amount"
             log.error(msg)

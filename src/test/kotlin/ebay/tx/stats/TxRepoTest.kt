@@ -1,8 +1,6 @@
 package ebay.tx.stats
 
 import com.google.common.base.Stopwatch
-import io.micronaut.context.ApplicationContext
-import io.micronaut.runtime.server.EmbeddedServer
 import io.micronaut.test.annotation.MicronautTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -11,20 +9,23 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.Instant
 import java.time.Instant.now
-import javax.inject.Inject
 import kotlin.random.Random
 import kotlin.streams.toList
 
 
-@MicronautTest(application = TxStatsApp::class)
+//@MicronautTest(application = TxStatsApp::class)
 class TxRepoTest {
 
-    @Inject
-    lateinit var server: EmbeddedServer
-    @Inject
-    lateinit var context: ApplicationContext
-    @Inject
-    private lateinit var txRepo: TxRepo
+    companion object {
+        @JvmStatic
+        fun main(args: Array<String>) {
+            TxRepoTest().testAddSalesAllValid()
+        }
+
+        private val log = LoggerFactory.getLogger(TxRepoTest::class.java)
+    }
+
+    private val txRepo = TxRepo()
 
 
     @Test
@@ -91,8 +92,5 @@ class TxRepoTest {
                 Statistics(t, amount, 1) // data for further analysis
             }.toList()
 
-    companion object {
-        private val log = LoggerFactory.getLogger(TxRepoTest::class.java)
-    }
 
 }
