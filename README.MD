@@ -1,6 +1,6 @@
 # Transaction Statistics Server
 
-For task details, check the `Backend Code Assignment.pdf` files
+For task details, check the `Backend Code Assignment.pdf` file
 
 ## Implementation Details
 
