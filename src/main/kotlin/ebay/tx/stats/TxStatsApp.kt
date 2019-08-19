@@ -8,9 +8,7 @@ import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpResponse.accepted
 import io.micronaut.http.HttpResponse.badRequest
 import io.micronaut.http.HttpResponse.ok
-import io.micronaut.http.HttpStatus
 import io.micronaut.http.MediaType
-import io.micronaut.http.MutableHttpResponse
 import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get

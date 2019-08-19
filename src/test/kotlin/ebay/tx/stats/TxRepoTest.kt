@@ -13,10 +13,11 @@ import kotlin.random.Random
 import kotlin.streams.toList
 
 
-//@MicronautTest(application = TxStatsApp::class)
+@MicronautTest(application = TxStatsApp::class)
 class TxRepoTest {
 
     companion object {
+        /** Use this for instant local runs */
         @JvmStatic
         fun main(args: Array<String>) {
             TxRepoTest().testAddSalesAllValid()
